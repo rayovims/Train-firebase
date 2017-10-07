@@ -9,6 +9,7 @@ var config = {
 
 firebase.initializeApp(config);
 
+
 var database = firebase.database();
 
 var name = "";
@@ -16,7 +17,9 @@ var destination = "";
 var firstTrain = 0;
 var frequency = 0;
 
-$("#addTrain").on("click", function() {
+$("#addTrain").on("click", function(e) {
+
+    e.preventDefault();
 
     name = $("#nameInput").val().trim();
     destination = $("#destinationInput").val().trim();
@@ -31,32 +34,42 @@ $("#addTrain").on("click", function() {
     });
 });
 
+var firstTrain1;
+var frequency1;
+var diffTime;
+var minutesTillTrain;
+var trainComing;
+var nextTrain;
+var name1;
+var destination1;
+
+
+
+var a;
+
 database.ref().on("child_added", function(childSnapshot) {
 
-    var firstTrain = moment(childSnapshot.val().firstTrain, "hh:mm");
+    firstTrain1 = moment(childSnapshot.val().firstTrain, "hh:mm");
 
-    var frequency = childSnapshot.val().frequency
+    frequency1 = childSnapshot.val().frequency
 
-    var diffTime = moment().diff(moment(firstTrain), "minutes");
+    diffTime = moment().diff(moment(firstTrain), "minutes");
 
-    var minutesTillTrain = frequency - (diffTime % frequency);
+    minutesTillTrain = frequency1 - (diffTime % frequency1);
 
-    var trainComing = moment().add(minutesTillTrain, "minutes");
+    trainComing = moment().add(minutesTillTrain, "minutes");
 
-    var nextTrain = moment(trainComing).format("hh:mm");
+    nextTrain = moment(trainComing).format("hh:mm");
+    name1 = childSnapshot.val().name;
 
-    console.log(nextTrain)
+    destination1 = childSnapshot.val().destination;
 
-
-
-
-    var a = $("<tr>");
-    var b = $("<td>").html(childSnapshot.val().name);
-    var c = $("<td>").html(childSnapshot.val().destination);
-    var d = $("<td>").html(childSnapshot.val().frequency);
+    a = $("<tr>");
+    var b = $("<td>").html(name1);
+    var c = $("<td>").html(destination1);
+    var d = $("<td>").html(frequency1);
     var e = $("<td>").html(nextTrain);
     var f = $("<td>").html(minutesTillTrain);
-
 
     a.append(b);
     a.append(c);
@@ -64,5 +77,6 @@ database.ref().on("child_added", function(childSnapshot) {
     a.append(e);
     a.append(f);
     $("#info").append(a);
+
 
 });
